@@ -284,15 +284,26 @@ def bs_means_diff_block(V1,V2,niter,blklen,debug='n'):
 #unlike bs_resample_block, the second provided variable is now the TUPLE sampshape, which is the shape of the output (not necessarily same shape as input, but preserving same temporal dependence).
 def bs_resample_block_ensemble(V,sampshape,blklen):
     
+    #SIZE OF INPUT DATA
     Vlen = V.shape[0]
     Vmem = V.shape[1]
-    nblks = np.ceil(sampshape[0]/blklen)
+    
+    #INTENDED SIZE OF OUTPUT DATA
+    nn = sampshape[0]
+    nblks = np.ceil(nn/blklen).astype(int)
     wdth = sampshape[1]
     
     #the number of possible different blocks is nn-blklen+1
-    x_indices = np.floor((nblks-blklen+1) * rnd.random_sample((nblks,wdth))).astype(int)    
-    y_indices = np.floor(wdth * rnd.random_sample((nblks,wdth))).astype(int)    
+    x_indices = np.floor((Vlen-blklen+1) * rnd.random_sample((nblks,wdth))).astype(int)    
+    y_indices = np.floor(Vmem * rnd.random_sample((nblks,wdth))).astype(int)
+    
+    #print(x_indices)
+    #print(y_indices)
+    #time.sleep(10)
+    
     Vnew = np.zeros(sampshape)
+    print(Vnew.shape)
+    time.sleep(5)
     
     for i in np.arange(nblks):
                
@@ -301,6 +312,8 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
             #final block may not be of full length - must account for it
             myblklen = np.minimum(blklen,nblks-blklen*i)
             Vnew[blklen*i : (blklen*i+myblklen), j] = V[x_indices[i,j] : x_indices[i,j]+myblklen, y_indices[i,j]]
+            print(Vnew)
+            time.sleep(3)
 
     return Vnew
 
