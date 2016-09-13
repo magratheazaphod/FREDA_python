@@ -309,10 +309,7 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
         
             #final block may not be of full length - must account for it
             myblklen = np.minimum(blklen,nn-blklen*i)
-            print(myblklen)
             Vnew[blklen*i : (blklen*i+myblklen), j] = V[x_indices[i,j] : x_indices[i,j]+myblklen, y_indices[i,j]]
-            print(Vnew)
-            time.sleep(3)
 
     return Vnew
 
@@ -327,6 +324,7 @@ def bs_means_diff_block_ensemble(V1, V2, niter, blklen, debug='n'):
 
     len1 = V1.shape[0] #CORRELATED dimension in time
     len2 = V2.shape[0]
+    
     mem1 = V1.shape[1] #UNCORRELATED ensemble dimension
     mem2 = V2.shape[1]
     
@@ -337,8 +335,8 @@ def bs_means_diff_block_ensemble(V1, V2, niter, blklen, debug='n'):
         #debugging module to show result of each iteration.
         if debug == 'y':      
                 
-            s1 = bs_resample_block(V1, n1, blklen)
-            s2 = bs_resample_block(V2, n2, blklen)
+            s1 = bs_resample_block_ensemble(V1, (len1,mem1), blklen)
+            s2 = bs_resample_block_ensemble(V2, (len2,mem2), blklen)
             print(s1)
             print(np.mean(s1))
             print(s2)
@@ -350,8 +348,8 @@ def bs_means_diff_block_ensemble(V1, V2, niter, blklen, debug='n'):
         else:
             
             #difference from bs_diff is a one-liner thanks to implementation
-            diffs[i] = np.mean(bs_resample_block(V1, n1, blklen)) \
-            -np.mean(bs_resample_block(V2, n2, blklen))
+            diffs[i] = np.mean(bs_resample_block_ensemble(V1, (len1,mem1), blklen)) \
+            -np.mean(bs_resample_block_ensemble(V2, (len2,mem2), blklen))
     
     #calculate effective p-value
     actualdiff = np.mean(V1)-np.mean(V2)
@@ -385,6 +383,3 @@ def bs_means_diff_block_ensemble(V1, V2, niter, blklen, debug='n'):
             plt.plot([u_99,u_99], [ymin,ymax], 'r--', lw=2)
             
     return actualdiff, pval
-
-    
-    return
