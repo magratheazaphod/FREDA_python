@@ -24,6 +24,10 @@ def autocorr(yy,lags=10):
     for i in np.arange(lags+1):
         yy_ac[i] = (np.sum(yy_norm * shift(yy_norm, i, cval=0))) / (nn-i)
 
-    tau = np.sum(yy_ac*yy_ac)   
+    #calculate Tau, the "decorrelation time scale." Must be careful because the
+    #formula for tau depends on what we're calculating it for (mean, variance, etc.)
+    
+    #for the mean, it ends up being 1 + sum(2*rho) where rho is autocorrelation
+    tau = 1 + 2*np.sum(yy_ac[1:])   
         
     return yy_ac, tau
