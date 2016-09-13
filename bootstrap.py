@@ -302,15 +302,14 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
     #time.sleep(10)
     
     Vnew = np.zeros(sampshape)
-    print(Vnew.shape)
-    time.sleep(5)
     
     for i in np.arange(nblks):
                
         for j in np.arange(wdth):
         
             #final block may not be of full length - must account for it
-            myblklen = np.minimum(blklen,nblks-blklen*i)
+            myblklen = np.minimum(blklen,nn-blklen*i)
+            print(myblklen)
             Vnew[blklen*i : (blklen*i+myblklen), j] = V[x_indices[i,j] : x_indices[i,j]+myblklen, y_indices[i,j]]
             print(Vnew)
             time.sleep(3)
