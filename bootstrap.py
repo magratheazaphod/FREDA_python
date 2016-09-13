@@ -275,3 +275,104 @@ def bs_means_diff_block(V1,V2,niter,blklen,debug='n'):
 
     
     return
+
+#same as bs_resample_block except that the data now comes in two dimensions, one of which is temporally correlated
+#the other dimension is an ensemble dimension where members are NOT correlated (e.g. different years of a phenomenon).
+
+#by convention, FIRST axis is temporally autocorrelated, and second is independent.
+
+#unlike bs_resample_block, the second provided variable is now the TUPLE sampshape, which is the shape of the output (not necessarily same shape as input, but preserving same temporal dependence).
+def bs_resample_block_ensemble(V,sampshape,blklen):
+    
+    Vlen = V.shape[0]
+    Vmem = V.shape[1]
+    nblks = np.ceil(sampshape[0]/blklen)
+    wdth = sampshape[1]
+    
+    #the number of possible different blocks is nn-blklen+1
+    x_indices = np.floor((nblks-blklen+1) * rnd.random_sample((nblks,wdth))).astype(int)    
+    y_indices = np.floor(wdth * rnd.random_sample((nblks,wdth))).astype(int)    
+    Vnew = np.zeros(sampshape)
+    
+    for i in np.arange(nblks):
+               
+        for j in np.arange(wdth):
+        
+            #final block may not be of full length - must account for it
+            myblklen = np.minimum(blklen,nblks-blklen*i)
+            Vnew[blklen*i : (blklen*i+myblklen), j] = V[x_indices[i,j] : x_indices[i,j]+myblklen, y_indices[i,j]]
+
+    return Vnew
+
+#same as bs_means_diff_block, with data drawn in consecutive blocks, except the data now come in multiple spatial dimensions.
+#one dimension is an ensemble dimension (not correlated in time), and the other dimension is a time dimension (correlated in time).
+
+#convention - FIRST dimension is correlated in time, second dimension cycles through ensemble members.
+
+#debug parameter can be set to 'y' (verbose) or to 'hist' (histogram)
+
+def bs_means_diff_block_ensemble(V1, V2, niter, blklen, debug='n'):
+
+    len1 = V1.shape[0] #CORRELATED dimension in time
+    len2 = V2.shape[0]
+    mem1 = V1.shape[1] #UNCORRELATED ensemble dimension
+    mem2 = V2.shape[1]
+    
+    diffs = np.zeros((niter,))
+    
+    for i in np.arange(niter):
+            
+        #debugging module to show result of each iteration.
+        if debug == 'y':      
+                
+            s1 = bs_resample_block(V1, n1, blklen)
+            s2 = bs_resample_block(V2, n2, blklen)
+            print(s1)
+            print(np.mean(s1))
+            print(s2)
+            print(np.mean(s2))
+            diffs[i] = np.mean(s1)-np.mean(s2)
+            print(diffs[i])
+            time.sleep(3)
+            
+        else:
+            
+            #difference from bs_diff is a one-liner thanks to implementation
+            diffs[i] = np.mean(bs_resample_block(V1, n1, blklen)) \
+            -np.mean(bs_resample_block(V2, n2, blklen))
+    
+    #calculate effective p-value
+    actualdiff = np.mean(V1)-np.mean(V2)
+    pval = (sum(diffs > 0)+1)/(niter+1) 
+    #normalized parameter to account for bias
+        
+    
+    #optional toggle produces a histogram to see the bootstrapped distribution     
+    if debug == 'hist':
+            
+            plt.hist(diffs,20)
+            plt.show()
+            ax = plt.axes()
+            xmin, xmax = ax.get_xlim()
+            ymin, ymax = ax.get_ylim()
+                        
+            ax.arrow(0, .98*ymax, 0, -.05*ymax, head_width=.015*(xmax-xmin), head_length=.03*ymax)
+            
+            #draw lines to demarcate 95%/99% confidence intervals.
+            diff_hist, bin_edges = np.histogram(diffs,500)
+            cdf = np.cumsum(diff_hist)/niter
+            l_99 = bin_edges[np.where(cdf > .005)[0][0]]
+            l_95 = bin_edges[np.where(cdf > .025)[0][0]]
+            u_95 = bin_edges[np.where(cdf > .975)[0][0]] 
+            u_99 = bin_edges[np.where(cdf > .995)[0][0]] 
+            
+            #draw lines to show confidence intervals on histogram
+            plt.plot([l_99,l_99], [ymin,ymax], 'r--', lw=2)
+            plt.plot([l_95,l_95], [ymin,ymax], 'k--', lw=2)
+            plt.plot([u_95,u_95], [ymin,ymax], 'k--', lw=2)
+            plt.plot([u_99,u_99], [ymin,ymax], 'r--', lw=2)
+            
+    return actualdiff, pval
+
+    
+    return
