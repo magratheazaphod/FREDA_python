@@ -383,3 +383,46 @@ def bs_means_diff_block_ensemble(V1, V2, niter, blklen, debug='n'):
             plt.plot([u_99,u_99], [ymin,ymax], 'r--', lw=2)
             
     return actualdiff, pval
+
+
+#NEW FUNCTION: given daily rainfall at each latitude, the length of smoothing in days, number of iterations
+#and block length blklen, returns a matrix of p-values corresponding to the SIGNIFICANCE OF CHANGE in that data set
+#between the two time periods.
+import numpy as np
+
+#yrs1 and yrs2 should both be tuples with two elements - beginning year and ending year
+#shape of P should be days (1st axis), latitude (2nd axis), ensemble members/years (3rd axis)
+
+def bs_diff_rain(P,yrs1,yrs2,daysmth,niter,blklen):
+    
+    pval = np.zeros((P.shape[0],P.shape[1]))
+    ll = int((daysmth-1)/2) #15-day smoothing -> 7 days before and after
+    
+    P1 = P[:,:,yrs1[0]-1 : yrs1[1]] 
+    P2 = P[:,:,yrs2[0]-1 : yrs2[1]]
+    #print(P1.shape)
+    #print(P2.shape)
+
+    for lat in np.arange(P1.shape[1]):
+        
+        samp1 = P1[:,lat,:]
+        samp2 = P2[:,lat,:]
+        
+        #following is important trick that I have to do to get day axis to wrap around...pad axis on each side
+        samp1_pad = np.pad(samp1, [(ll, ll), (0, 0)], 'wrap')
+        samp2_pad = np.pad(samp2, [(ll, ll), (0, 0)], 'wrap')
+                
+        for dd in np.arange(P1.shape[0]):
+            
+            start = time.time()
+
+            s1 = samp1_pad[dd : dd+daysmth, :]
+            s2 = samp2_pad[dd : dd+daysmth, :]
+                            
+            pval[dd,lat] = bs_means_diff_block_ensemble(s1, s2, niter, blklen)[1]
+            end = time.time()
+            print(end - start)
+
+
+            
+    return pval
