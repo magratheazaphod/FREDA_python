@@ -314,6 +314,7 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
     return Vnew
 
 ## SEPTEMBER 20th - REWRITING BS_RESAMPLE_BLOCK_ENSEMBLE to try to speed up bottlenecks.
+#result according to timeit - improved performance by 1/3
 def bs_resample_block_ensemble_nu(V,sampshape,blklen):
     
     #SIZE OF INPUT DATA
@@ -350,6 +351,51 @@ def bs_resample_block_ensemble_nu(V,sampshape,blklen):
         Vnew[nn-lastblklen : nn, j] = V[x_indices[nblks-1,j] : x_indices[nblks-1,j]+lastblklen, y_indices[nblks-1,j]]
 
     return Vnew
+
+
+## SEPTEMBER 21st - continuing to try to speed up bs_resample
+# New try - instead of having to look up blocks in 2-D array, create a dictionary of all blocks
+#at the beginning. should make lookup much faster?
+def bs_resample_block_ensemble_3(V,sampshape,blklen):
+    
+    #SIZE OF INPUT DATA
+    Vlen = V.shape[0]
+    Vmem = V.shape[1]
+    
+    #INTENDED SIZE OF OUTPUT DATA
+    nn = sampshape[0]
+    nblks = np.ceil(nn/blklen).astype(int)
+    wdth = sampshape[1]
+    
+    #MAKE LIST OF ALL POSSIBLE DOMINOS
+    
+    #the number of possible different blocks is nn-blklen+1
+    x_indices = np.floor((Vlen-blklen+1) * rnd.random_sample((nblks,wdth))).astype(int)    
+    y_indices = np.floor(Vmem * rnd.random_sample((nblks,wdth))).astype(int)
+    
+    #print(x_indices)
+    #print(y_indices)
+    #time.sleep(10)
+    
+    Vnew = np.zeros(sampshape)
+    
+    #CALCULATE length of last block - whole block may not fit in.
+    lastblklen = nn % blklen 
+    #print(lastblklen)
+    #time.sleep(5)
+    
+    for j in np.arange(wdth):
+
+        for i in np.arange(nblks-1):       
+            
+            x_index = x_indices[i,j]
+            Vnew[blklen*i : blklen*(i+1), j] = V[x_index : x_index + blklen, y_indices[i,j]]
+            
+        #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
+        Vnew[nn-lastblklen : nn, j] = V[x_indices[nblks-1,j] : x_indices[nblks-1,j]+lastblklen, y_indices[nblks-1,j]]
+
+    return Vnew
+
 
 
 #same as bs_means_diff_block, with data drawn in consecutive blocks, except the data now come in multiple spatial dimensions.
