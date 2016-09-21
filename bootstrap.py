@@ -344,7 +344,9 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
     for j in np.arange(wdth):
 
         for i in np.arange(nblks-1):       
-            x_index = x_indices[i,j]
+            #faster to make this NOT a one-liner, so it doesn't have to look up x_indices twice
+            #results in speed-up of ~5-10%
+            x_index = x_indices[i,j] 
             Vnew[blklen*i : blklen*(i+1), j] = V[x_index : x_index+blklen, y_indices[i,j]]
             
         #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
@@ -357,6 +359,7 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
 ## SEPTEMBER 21st - continuing to try to speed up bs_resample
 # New try - instead of having to look up blocks in 2-D array, create a dictionary of all blocks
 #at the beginning. should make lookup much faster?
+#RESULT: Actually performs more slowly than previous version; assignment b/w numpy arrays is fast
 def bs_resample_block_ensemble_dict(V,sampshape,blklen):
     
     #SIZE OF INPUT DATA
