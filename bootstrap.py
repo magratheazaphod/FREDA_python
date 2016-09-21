@@ -313,6 +313,46 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
 
     return Vnew
 
+## SEPTEMBER 20th - REWRITING BS_RESAMPLE_BLOCK_ENSEMBLE to try to speed up bottlenecks.
+def bs_resample_block_ensemble(V,sampshape,blklen):
+    
+    #SIZE OF INPUT DATA
+    Vlen = V.shape[0]
+    Vmem = V.shape[1]
+    
+    #INTENDED SIZE OF OUTPUT DATA
+    nn = sampshape[0]
+    nblks = np.ceil(nn/blklen).astype(int)
+    wdth = sampshape[1]
+    
+    #the number of possible different blocks is nn-blklen+1
+    x_indices = np.floor((Vlen-blklen+1) * rnd.random_sample((nblks,wdth))).astype(int)    
+    y_indices = np.floor(Vmem * rnd.random_sample((nblks,wdth))).astype(int)
+    
+    #print(x_indices)
+    #print(y_indices)
+    #time.sleep(10)
+    
+    Vnew = np.zeros(sampshape)
+    
+    #CALCULATE length of last block - whole block may not fit in.
+    lastblklen = nn % blklen
+    print(lastblklen)
+    time.sleep(5)
+    
+    for i in np.arange(nblks):
+               
+        for j in np.arange(wdth-1):
+        
+            #final block may not be of full length - must account for it
+            Vnew[blklen*i : (blklen*i+blklen), j] = V[x_indices[i,j] : x_indices[i,j]+blklen, y_indices[i,j]]
+            
+        #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
+        
+
+    return Vnew
+
+
 #same as bs_means_diff_block, with data drawn in consecutive blocks, except the data now come in multiple spatial dimensions.
 #one dimension is an ensemble dimension (not correlated in time), and the other dimension is a time dimension (correlated in time).
 
