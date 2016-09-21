@@ -314,7 +314,7 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
     return Vnew
 
 ## SEPTEMBER 20th - REWRITING BS_RESAMPLE_BLOCK_ENSEMBLE to try to speed up bottlenecks.
-def bs_resample_block_ensemble(V,sampshape,blklen):
+def bs_resample_block_ensemble_nu(V,sampshape,blklen):
     
     #SIZE OF INPUT DATA
     Vlen = V.shape[0]
@@ -336,19 +336,19 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
     Vnew = np.zeros(sampshape)
     
     #CALCULATE length of last block - whole block may not fit in.
-    lastblklen = nn % blklen
-    print(lastblklen)
-    time.sleep(5)
+    lastblklen = nn % blklen 
+    #print(lastblklen)
+    #time.sleep(5)
     
-    for i in np.arange(nblks):
-               
-        for j in np.arange(wdth-1):
+    for j in np.arange(wdth):
+
+        for i in np.arange(nblks-1):       
         
             #final block may not be of full length - must account for it
             Vnew[blklen*i : (blklen*i+blklen), j] = V[x_indices[i,j] : x_indices[i,j]+blklen, y_indices[i,j]]
             
         #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
-        
+        Vnew[blklen*i : (blklen*i+lastblklen), j] = V[x_indices[i,j] : x_indices[i,j]+lastblklen, y_indices[i,j]]
 
     return Vnew
 
