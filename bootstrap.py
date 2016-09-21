@@ -344,11 +344,10 @@ def bs_resample_block_ensemble_nu(V,sampshape,blklen):
 
         for i in np.arange(nblks-1):       
         
-            #final block may not be of full length - must account for it
-            Vnew[blklen*i : (blklen*i+blklen), j] = V[x_indices[i,j] : x_indices[i,j]+blklen, y_indices[i,j]]
+            Vnew[blklen*i : blklen*(i+1), j] = V[x_indices[i,j] : x_indices[i,j]+blklen, y_indices[i,j]]
             
         #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
-        Vnew[blklen*i : (blklen*i+lastblklen), j] = V[x_indices[i,j] : x_indices[i,j]+lastblklen, y_indices[i,j]]
+        Vnew[nn-lastblklen : nn, j] = V[x_indices[nblks-1,j] : x_indices[nblks-1,j]+lastblklen, y_indices[nblks-1,j]]
 
     return Vnew
 
