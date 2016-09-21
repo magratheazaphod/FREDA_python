@@ -282,7 +282,7 @@ def bs_means_diff_block(V1,V2,niter,blklen,debug='n'):
 #by convention, FIRST axis is temporally autocorrelated, and second is independent.
 
 #unlike bs_resample_block, the second provided variable is now the TUPLE sampshape, which is the shape of the output (not necessarily same shape as input, but preserving same temporal dependence).
-def bs_resample_block_ensemble(V,sampshape,blklen):
+def bs_resample_block_ensemble_old(V,sampshape,blklen):
     
     #SIZE OF INPUT DATA
     Vlen = V.shape[0]
@@ -315,7 +315,7 @@ def bs_resample_block_ensemble(V,sampshape,blklen):
 
 ## SEPTEMBER 20th - REWRITING BS_RESAMPLE_BLOCK_ENSEMBLE to try to speed up bottlenecks.
 #result according to timeit - improved performance by 1/3
-def bs_resample_block_ensemble_nu(V,sampshape,blklen):
+def bs_resample_block_ensemble(V,sampshape,blklen):
     
     #SIZE OF INPUT DATA
     Vlen = V.shape[0]
@@ -344,11 +344,12 @@ def bs_resample_block_ensemble_nu(V,sampshape,blklen):
     for j in np.arange(wdth):
 
         for i in np.arange(nblks-1):       
-        
-            Vnew[blklen*i : blklen*(i+1), j] = V[x_indices[i,j] : x_indices[i,j]+blklen, y_indices[i,j]]
+            x_index = x_indices[i,j]
+            Vnew[blklen*i : blklen*(i+1), j] = V[x_index : x_index+blklen, y_indices[i,j]]
             
         #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
-        Vnew[nn-lastblklen : nn, j] = V[x_indices[nblks-1,j] : x_indices[nblks-1,j]+lastblklen, y_indices[nblks-1,j]]
+        x_index = x_indices[nblks-1,j]
+        Vnew[nn-lastblklen : nn, j] = V[x_index : x_index+lastblklen, y_indices[nblks-1,j]]
 
     return Vnew
 
