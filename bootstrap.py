@@ -365,43 +365,34 @@ def bs_resample_block_ensemble_dict(V,sampshape,blklen):
     #INTENDED SIZE OF OUTPUT DATA
     nn = sampshape[0]
     nblks = np.ceil(nn/blklen).astype(int)
-    wdth = sampshape[1]
-    shape_out = (nblks,wdth)
+    total_rows = sampshape[1]
+    shape_out = (nblks,total_rows)
     
     #MAKE DICTIONARY OF ALL POSSIBLE DOMINOS - more memory-intensive than previous method
     dominos=[]
+    dominos_per_row = nn-blklen+1 #total number of dominos in each row
+    total_dominos = dominos_per_row*total_rows
     
-    for i in np.arange(nn-nblks+1):
-        for j in np.arange(wdth):
-            dominos.append(V[i : i+blklen,j]
-            print(dominos)
-            time.sleep(5)
-                           
-    print(dominos)
-    time.sleep(5)
-            
+    for j in np.arange(total_rows):
+        for i in np.arange(dominos_per_row):
+            dominos.append(V[i : i+blklen,j])
+    
     #DEFINE DICTIONARY
-    #domino_dict = { i:dominos for i in np.arange(nblks*wdth) }
-            
-    
-    #the number of possible different blocks is nn-blklen+1
-    x_indices = np.floor((Vlen-blklen+1) * rnd.random_sample(shape_out)).astype(int)    
-    y_indices = np.floor(Vmem * rnd.random_sample(shape_out)).astype(int)
-    Vnew = np.zeros(sampshape)
+    domino_dict = { i:dominos[i] for i in range(total_dominos) }
     
     #CALCULATE length of last block - whole block may not fit in.
     lastblklen = nn % blklen 
+    Vnew = np.zeros(sampshape)
     
-    for j in np.arange(wdth):
+    #fill in the output vector from original data, one domino at a time
+    for j in np.arange(total_rows):
 
         for i in np.arange(nblks-1):       
             
-            x_index = x_indices[i,j]
-            Vnew[blklen*i : blklen*(i+1), j] = V[x_index : x_index + blklen, y_indices[i,j]]
+            Vnew[blklen*i : blklen*(i+1), j] = domino_dict[rnd.randint(0,total_dominos)]
             
-        #LAST BLOCK may be of different length, in which case we draw whole block but just put in whatever fits.
-        x_index = x_indices[nblks-1,j]
-        Vnew[nn-lastblklen : nn, j] = V[x_index : x_index+lastblklen, y_indices[nblks-1,j]]
+        #LAST BLOCK may be of different length - put in whatever fits.
+        Vnew[nn-lastblklen : nn, j] = domino_dict[rnd.randint(0,total_dominos)][0:lastblklen]
 
     return Vnew
 
