@@ -484,7 +484,7 @@ import numpy as np
 
 def bs_diff_rain(P,yrs1,yrs2,daysmth,niter,blklen):
     
-    print(P.shape)
+    #print(P.shape)
     pval = np.zeros((P.shape[0],P.shape[1]))
     ll = int((daysmth-1)/2) #15-day smoothing -> 7 days before and after
     
@@ -504,15 +504,13 @@ def bs_diff_rain(P,yrs1,yrs2,daysmth,niter,blklen):
                 
         for dd in np.arange(P1.shape[0]):
             
-            start = time.time()
+            #start = time.time()
 
             s1 = samp1_pad[dd : dd+daysmth, :]
             s2 = samp2_pad[dd : dd+daysmth, :]
                             
             pval[dd,lat] = bs_means_diff_block_ensemble(s1, s2, niter, blklen)[1]
-            end = time.time()
-            print(end - start)
-
-
+            #end = time.time()
+            #print(end - start)
             
     return pval
