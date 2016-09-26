@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.random as rnd
 import time
-
+import os.path as path
+import netCDF4 as nc
 
 #Bootstrap resampling of sample data
 #V is the sample space, nsamp is the number of samples that we're drawing from V
@@ -514,3 +515,79 @@ def bs_diff_rain(P,yrs1,yrs2,daysmth,niter,blklen):
             #print(end - start)
             
     return pval
+
+#same as bs_diff_rain above, except that it incrementally saves progress to the netCDF file of your choice (savefile).
+#also verifies if this file already exists - only if you manually set to overwrite does it do so.
+#options for overwrite: 'n', 'y' and 'a' for append - useful to save data incrementally.
+#ALSO - toggle "rows" indicates how many more rows to run at a time.
+def bs_diff_rain_save(P,yrs1,yrs2,daysmth,niter,blklen,savefile,rows,overwrite='n'):
+    
+    #print(P.shape)
+    pval = np.zeros((P.shape[0],P.shape[1]))
+    ll = int((daysmth-1)/2) #15-day smoothing -> 7 days before and after
+    
+    P1 = P[:,:,yrs1[0]-1 : yrs1[1]] 
+    P2 = P[:,:,yrs2[0]-1 : yrs2[1]]
+    #print(P1.shape)
+    #print(P2.shape)
+
+    
+    ##netCDF I/O - checks if file exists
+    if not overwrite in ['y','a','n']:
+        
+        print('Please choose valid option for overwrite: (y)es, (a)ppend or (n)o')
+        return
+    
+    if path.isfile(savefile) and overwrite =='n':
+            
+        print('File exists and overwrite not enabled.')
+        return
+        
+    elif path.isfile(savefile) and overwrite =='a':
+            
+        print('Appending to existing file')
+        fileout = nc.Dataset(savefile, 'a')
+        pval = fileout['pval'] #now equivalence between netcdf output and pval variable - convenient
+        start_index = fileout.lastrow + 1 #start on the next row from the last complete row.
+            
+    else: #we end up here if file doesn't exist, OR if overwrite is set to 'y'
+            
+        print('Building new file.')
+        fileout = nc.Dataset(savefile, 'w')
+        days_dim = fileout.createDimension('days', None)
+        lat_dim = fileout.createDimension('lat', None)
+        dim_tuple = ("days","lat")
+        pval = fileout.createVariable("pval", 'f8', dim_tuple)
+        fileout.lastrow = 0
+        start_index=0 
+        
+    ##BOOTSTRAPPING LOOP    
+    for lat in np.arange(start_index,start_index+rows):
+        
+        samp1 = P1[:,lat,:]
+        samp2 = P2[:,lat,:]
+        
+        #following is important trick that I have to do to get day axis to wrap around...pad axis on each side
+        samp1_pad = np.pad(samp1, [(ll, ll), (0, 0)], 'wrap')
+        samp2_pad = np.pad(samp2, [(ll, ll), (0, 0)], 'wrap')
+                        
+        for dd in np.arange(P1.shape[0]):
+            
+            #start = time.time()
+            print(dd)
+
+            s1 = samp1_pad[dd : dd+daysmth, :]
+            s2 = samp2_pad[dd : dd+daysmth, :]
+                            
+            pval[dd,lat] = bs_means_diff_block_ensemble(s1, s2, niter, blklen)[1]
+            #end = time.time()
+            #print(end - start)
+            
+        fileout.lastrow = lat
+        print("Completed row " + str(fileout.lastrow))
+        
+    pval_out = pval[:]
+    fileout.close()
+    
+    return pval_out #return contents of pval, not the netCDF variable
+        
