@@ -564,6 +564,8 @@ def bs_diff_rain_save(P,yrs1,yrs2,daysmth,niter,blklen,savefile,rows,overwrite='
     ##BOOTSTRAPPING LOOP    
     for lat in np.arange(start_index,start_index+rows):
         
+        start = time.time() #timer completed below
+        
         samp1 = P1[:,lat,:]
         samp2 = P2[:,lat,:]
         
@@ -573,18 +575,18 @@ def bs_diff_rain_save(P,yrs1,yrs2,daysmth,niter,blklen,savefile,rows,overwrite='
                         
         for dd in np.arange(P1.shape[0]):
             
-            #start = time.time()
             print(dd)
 
             s1 = samp1_pad[dd : dd+daysmth, :]
             s2 = samp2_pad[dd : dd+daysmth, :]
                             
             pval[dd,lat] = bs_means_diff_block_ensemble(s1, s2, niter, blklen)[1]
-            #end = time.time()
-            #print(end - start)
             
         fileout.lastrow = lat
         print("Completed row " + str(fileout.lastrow))
+        
+        end = time.time()
+        print(end - start) #print out how long it takes to do each row
         
     pval_out = pval[:]
     fileout.close()
