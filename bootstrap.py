@@ -592,4 +592,29 @@ def bs_diff_rain_save(P,yrs1,yrs2,daysmth,niter,blklen,savefile,rows,overwrite='
     fileout.close()
     
     return pval_out #return contents of pval, not the netCDF variable
+
+
+##collect function designed to aggregate all observations from 3D storage matrix - takes every ensemble (3rd dimension)
+
+#originally included as part of RDA_intensity.ipynb; seems useful enough that I figured
+#I would also include in my bootstrap library.
+
+#RETURNS every non-NaN observation, as a single numpy array
+#inputs: P is the full 3D matrix, dd is the day of interest(0-364), yy is the latitude bin of interest (likely 0-21), dayrange is total range of days considered,
+#latrange is range of latitude bins to include.
+def collect(P,dd,latbin,dayrange,latrange):
+        
+    ll=int((dayrange-1)/2)
+    yy=int((latrange-1)/2)
+    
+    days = P.shape[0]
+    lats = P.shape[1]
+    
+    Psample = P.take(range(dd-ll,dd+ll+1), mode='wrap', axis=0)
+    P_collect = Psample[:,max(0,latbin-yy):min(days,latbin+yy+1),:].flatten()
+    P_return = P_collect[~np.isnan(P_collect)]
+    #print(len(P_collect))
+    #print(len(P_return))
+    
+    return P_collect[~np.isnan(P_collect)]
         
