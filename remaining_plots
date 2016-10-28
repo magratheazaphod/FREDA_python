@@ -1,0 +1,12 @@
+plots to make:
+1) hovmoller climatology of rainband latitude, intensity and f*q
+2) hovmoller of dif, 1980-2007 v 1951-1979
+3) hovmoller of dif, 1994-2007 v 1980-1993
+
+4) panels of banded fraction for seasons
+
+5) f*q, event-based (3rd row for bar plot)
+
+ALSO
+1) redo china_rainfall with taiwan removed
+2) rewrite algo in python...
