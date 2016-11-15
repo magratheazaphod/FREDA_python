@@ -14,6 +14,9 @@ List of completed sub-projects:
 
 -RDA_intensity.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
 
+-seaborn_sandbox.ipynb: Figuring out tsplot command from seaborn.
+
+
 Projects still in pipeline:
 -Rerun significance of intensity changes with permutation method, instead of bootstrapping without mixing between samples.
 
