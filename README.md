@@ -25,6 +25,8 @@ china_rain_diff_taiwan_test.ipynb: A quick proof that Taiwan is not the exclusiv
 
 -RDA_hov_frequency_intensity_plots.ipynb: Creates Hovmoller plots of climatological rainband frequency, intensity and net rainfall produced, and also figures showing decadal changes. Produces figures hov_freq_int_climo.pdf, hov_freq_int_8007_5179.pdf and hov_freq_int_9407_8093.pdf.
 
+-RDA_hovmoller_frequency.ipynb: Uses output of RDA algorithm to create a hovmoller plot of frequency for each latitude and day of year for an arbitrary set of years of interest. Output saved as RDA_freq_hov.nc.
+
 -RDA_hovmoller_intensity_construct.ipynb: Arranges all observations of rainband intensity in useful 3-dimensional format - arranged by day of year, latitude and a record direction in case there are multiple occurrences. Saves output as RDA_int_hov.nc
 
 -RDA_intensity.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
