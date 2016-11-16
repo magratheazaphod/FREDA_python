@@ -2,9 +2,14 @@
 Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
 List of completed sub-projects:
+
 autocorr.py: function to calculate the autocorrelation rho of a time series with itself at arbitrary time lags. also returns the autocorrelation time scale of the mean tau, as described in function header.
 
 bootstrap.py: collection of bootstrap codes to create resamples using different methods, and also to calculate the significance of changes in mean between time periods. Also implements a moving blocks bootstrap (each sample includes multiple consecutive days) to account for the autocorrelation in some of the time series of interest in this project.
+
+china_rain_diff.ipynb: Crucial workhorse notebook that calculates the significance of decadal changes in zonally averaged rainfall using a bootstrap with 2,000 iterations. Roughly 10 hours per run! Need to enter script and edit time period of interest and type of rainfall. Produces output in the form chinarain_diff_pval_notaiwan_{years2}_{years1}_{type}_{block_length}_{num_of_iterations} in NetCDF format.
+
+china_rain_diff_taiwan_test.ipynb: A quick proof that Taiwan is not the exclusive cause of apparent huge rainfall changes in southern China between 1994-2007 and 1980-1993. Nonetheless, went and repeated all of the china_rain_diff analysis in paper leaving out Taiwan.
 
 -RDA_bars_with_whiskers.ipynb: Show the mean and std dev of band frequency and intensity during different time periods, and also overlays the p-value of significance of changes between time periods (51-79 v 80-07 and 80-93 v 94-07). Replaces table from thesis. Produces figure RDA_bar_final.pdf
 
@@ -23,7 +28,10 @@ bootstrap.py: collection of bootstrap codes to create resamples using different 
 -seaborn_sandbox.ipynb: Figuring out tsplot command from seaborn.
 
 
-Projects still in pipeline:
+
+
+Projects still in progress:
+
 -Rerun significance of intensity changes with permutation method, instead of bootstrapping without mixing between samples.
 
 -A companion to the 12-panel RDA_type_changes figure, except comparing 1994-2007 and 1980-1993.
