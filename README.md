@@ -3,7 +3,7 @@ Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
 List of completed sub-projects:
 
-asia_rain_climo.ipynb
+asia_rain_climo.ipynb: Produces figure SFND.eps showing changes in full year rainfall between time periods of interest.
 
 autocorr.py: function to calculate the autocorrelation rho of a time series with itself at arbitrary time lags. also returns the autocorrelation time scale of the mean tau, as described in function header.
 
@@ -24,6 +24,8 @@ china_rain_diff_taiwan_test.ipynb: A quick proof that Taiwan is not the exclusiv
 -RDA_frequency_autocorrelation.ipynb - calculates the autocorrelation timescale tau used by RDA_freq_diff_tau.ipynb.
 
 -RDA_hov_frequency_intensity_plots.ipynb: Creates Hovmoller plots of climatological rainband frequency, intensity and net rainfall produced, and also figures showing decadal changes. Produces figures hov_freq_int_climo.pdf, hov_freq_int_8007_5179.pdf and hov_freq_int_9407_8093.pdf.
+
+-RDA_hovmoller_intensity_construct.ipynb: Arranges all observations of rainband intensity in useful 3-dimensional format - arranged by day of year, latitude and a record direction in case there are multiple occurrences. Saves output as RDA_int_hov.nc
 
 -RDA_intensity.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
 
