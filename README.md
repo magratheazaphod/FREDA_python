@@ -3,7 +3,7 @@ Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
 List of completed sub-projects:
 
-asia_rain_climo.ipynb: Produces figure SFND.eps showing changes in full year rainfall between time periods of interest.
+asia_rain_diff.ipynb: Produces figure SFND.eps showing changes in full year rainfall between time periods of interest.
 
 autocorr.py: function to calculate the autocorrelation rho of a time series with itself at arbitrary time lags. also returns the autocorrelation time scale of the mean tau, as described in function header.
 
@@ -29,9 +29,11 @@ china_rain_diff_taiwan_test.ipynb: A quick proof that Taiwan is not the exclusiv
 
 -RDA_hovmoller_intensity_construct.ipynb: Arranges all observations of rainband intensity in useful 3-dimensional format - arranged by day of year, latitude and a record direction in case there are multiple occurrences. Saves output as RDA_int_hov.nc
 
--RDA_intensity.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
+-RDA_intensity_climo.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
 
 -RDA_precip_china_type: Takes 57 years of China rainfall and finds latitude-mean rainfall for each day, latitude and year. Most recent version masks out Taiwan since physics of rainfall there distinct from what's going on on mainland. Saved as Pchina_type_notaiwan.nc
+
+-RDA_type_seasonal: Used to eventually produce a 12-panel figure of changes in different types of rainfall during particular stages of the year. Comparison is between two sets of years. Output is RDA_type_season_yrly.nc.
 
 -seaborn_sandbox.ipynb: Figuring out tsplot command from seaborn.
 
