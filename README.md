@@ -3,6 +3,8 @@ Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
 List of completed sub-projects:
 
+asia_rain_climo.ipynb
+
 autocorr.py: function to calculate the autocorrelation rho of a time series with itself at arbitrary time lags. also returns the autocorrelation time scale of the mean tau, as described in function header.
 
 bootstrap.py: collection of bootstrap codes to create resamples using different methods, and also to calculate the significance of changes in mean between time periods. Also implements a moving blocks bootstrap (each sample includes multiple consecutive days) to account for the autocorrelation in some of the time series of interest in this project.
