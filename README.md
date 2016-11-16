@@ -1,7 +1,7 @@
 # RDA_python
-Python codes written to finish manuscript on the Rainband Detection Algorithm.
+# Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
-List of completed sub-projects:
+## List of completed sub-projects:
 
 asia_rain_diff.ipynb: Produces figure SFND.eps showing changes in full year rainfall between time periods of interest.
 
@@ -44,12 +44,14 @@ seaborn_sandbox.ipynb: Figuring out tsplot command from seaborn.
 
 
 
-Projects still in progress:
+## Projects still in progress:
 
--Rerun significance of intensity changes with permutation method, instead of bootstrapping without mixing between samples.
+Rerun significance of intensity changes with permutation method, instead of bootstrapping without mixing between samples.
 
--A companion to the 12-panel RDA_type_changes figure, except comparing 1994-2007 and 1980-1993.
+A companion to the 12-panel RDA_type_changes figure, except comparing 1994-2007 and 1980-1993.
 
--A figure showing the seasonal fraction of banded rainfall at different points (as opposed to just the yearly fraction)
+A figure showing the seasonal fraction of banded rainfall at different points (as opposed to just the yearly fraction)
  
--P-values of decadal changes in 'effective rainfall'
+P-values of decadal changes in 'effective rainfall'
+
+Rewrite the original 12-panel rainfall change figure to use units of mm, not mm/day
