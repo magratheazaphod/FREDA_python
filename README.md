@@ -29,7 +29,11 @@ china_rain_diff_taiwan_test.ipynb: A quick proof that Taiwan is not the exclusiv
 
 -RDA_hovmoller_intensity_construct.ipynb: Arranges all observations of rainband intensity in useful 3-dimensional format - arranged by day of year, latitude and a record direction in case there are multiple occurrences. Saves output as RDA_int_hov.nc
 
+-RDA_intensity_bootstrap.ipynb: bootstrapping script that figures out p-value associated with changes in intensity between decades. Value for each day of the year and latitude.
+
 -RDA_intensity_climo.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
+
+-RDA_intensity_diff.ipynb: Basically an abandoned first try at finding the significance of changes in intensity between decades.
 
 -RDA_precip_china_type: Takes 57 years of China rainfall and finds latitude-mean rainfall for each day, latitude and year. Most recent version masks out Taiwan since physics of rainfall there distinct from what's going on on mainland. Saved as Pchina_type_notaiwan.nc
 
