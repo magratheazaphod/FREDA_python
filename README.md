@@ -14,6 +14,8 @@ List of completed sub-projects:
 
 -RDA_intensity.ipynb: Sweet script that figures out mean intensity of rainbands at a given latitude and day of the year by aggregating every event within an n-day and m-degree of latitude range.
 
+-RDA_precip_china_type: Takes 57 years of China rainfall and finds latitude-mean rainfall for each day, latitude and year. Most recent version masks out Taiwan since physics of rainfall there distinct from what's going on on mainland. Saved as Pchina_type_notaiwan.nc
+
 -seaborn_sandbox.ipynb: Figuring out tsplot command from seaborn.
 
 
