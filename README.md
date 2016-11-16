@@ -2,6 +2,10 @@
 Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
 List of completed sub-projects:
+autocorr.py: function to calculate the autocorrelation rho of a time series with itself at arbitrary time lags. also returns the autocorrelation time scale of the mean tau, as described in function header.
+
+bootstrap.py: collection of bootstrap codes to create resamples using different methods, and also to calculate the significance of changes in mean between time periods. Also implements a moving blocks bootstrap (each sample includes multiple consecutive days) to account for the autocorrelation in some of the time series of interest in this project.
+
 -RDA_bars_with_whiskers.ipynb: Show the mean and std dev of band frequency and intensity during different time periods, and also overlays the p-value of significance of changes between time periods (51-79 v 80-07 and 80-93 v 94-07). Replaces table from thesis. Produces figure RDA_bar_final.pdf
 
 -RDA_effective_rainfall.ipynb: Given rainband frequency and intensity, spits out the mean rainfall generated as RDA_effective_rainfall.nc. Decadal changes saved as RDA_effective_rainfall_diff.nc
