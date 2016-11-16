@@ -9,6 +9,8 @@ bootstrap.py: collection of bootstrap codes to create resamples using different 
 
 china_rain_diff.ipynb: Crucial workhorse notebook that calculates the significance of decadal changes in zonally averaged rainfall using a bootstrap with 2,000 iterations. Roughly 10 hours per run! Need to enter script and edit time period of interest and type of rainfall. Produces output in the form chinarain_diff_pval_notaiwan_{years2}_{years1}_{type}_{block_length}_{num_of_iterations} in NetCDF format.
 
+china_rain_diff_fig.ipynb: Shows results from china_rain_diff in figure format. Produces figures chinarain_diff_notaiwan_8007_5179.pdf and chinarain_diff_notaiwan_9407_8093.pdf.
+
 china_rain_diff_taiwan_test.ipynb: A quick proof that Taiwan is not the exclusive cause of apparent huge rainfall changes in southern China between 1994-2007 and 1980-1993. Nonetheless, went and repeated all of the china_rain_diff analysis in paper leaving out Taiwan.
 
 -RDA_bars_with_whiskers.ipynb: Show the mean and std dev of band frequency and intensity during different time periods, and also overlays the p-value of significance of changes between time periods (51-79 v 80-07 and 80-93 v 94-07). Replaces table from thesis. Produces figure RDA_bar_final.pdf
