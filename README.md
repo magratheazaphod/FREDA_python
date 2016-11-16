@@ -1,7 +1,7 @@
 # RDA_python
-# Python codes written to finish manuscript on the Rainband Detection Algorithm.
+## Python codes written to finish manuscript on the Rainband Detection Algorithm.
 
-## List of completed sub-projects:
+### List of completed sub-projects:
 
 asia_rain_diff.ipynb: Produces figure SFND.eps showing changes in full year rainfall between time periods of interest.
 
@@ -44,7 +44,7 @@ seaborn_sandbox.ipynb: Figuring out tsplot command from seaborn.
 
 
 
-## Projects still in progress:
+### Projects still in progress:
 
 Rerun significance of intensity changes with permutation method, instead of bootstrapping without mixing between samples.
 
