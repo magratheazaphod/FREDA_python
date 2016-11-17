@@ -208,7 +208,7 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
     return actualdiff, pval
 
     
-#same as the above, but with a moving blocks bootstrap - as in, data chosen in consecutive blocks. Only one method makes sence - bootstrap with replacement from within each sample.
+#same as the above, but with a moving blocks bootstrap - as in, data chosen in consecutive blocks. Only one method makes sense - bootstrap with replacement from within each sample.
 #debug parameter can be set to 'y', which gives verbose output, or also to 'hist'
 #hist produces nice histogram of bootstrap simulation results and graphic view of 
 #where p-value falls.
