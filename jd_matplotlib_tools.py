@@ -32,3 +32,25 @@ def add_double_calendar_axis():
     
     ## annotate day axis with unit
     ax_ticks.annotate('Day #', (.01, 1.04), textcoords='axes fraction', size=12)
+
+    
+## the following draws dashed lines on the plot to demarcate time periods of interest.
+## if two time periods are contiguous, then we won't draw two separate lines.
+## periods should be a list of lists, with each sublist containing a start and end date.
+
+## also optionally numbers the time periods
+def mark_time_periods(periods, numbers = 'no'):
+    
+    ax = plt.gca()
+    
+    for i, p in enumerate(periods):
+            
+        [ymin, ymax] = ax.get_ylim()
+        plt.plot([p[0],p[0]], [ymin,ymax],'k--')
+        plt.plot([p[1],p[1]], [ymin,ymax],'k--')
+        props = dict(boxstyle='square,pad=0.1', facecolor='white')
+
+        if numbers == 'yes':
+        #if yes, place a text box in upper left in axes coords
+            ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
+                        transform=ax.transAxes, fontsize=12,verticalalignment='top', bbox=props)
