@@ -39,7 +39,7 @@ def add_double_calendar_axis():
 ## periods should be a list of lists, with each sublist containing a start and end date.
 
 ## also optionally numbers the time periods
-def mark_time_periods(periods, numbers = 'no'):
+def mark_time_periods(periods, numbers = 'no', box = 'yes'):
     
     ax = plt.gca()
     
@@ -52,5 +52,11 @@ def mark_time_periods(periods, numbers = 'no'):
 
         if numbers == 'yes':
         #if yes, place a text box in upper left in axes coords
-            ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
+        
+            if box == 'yes':
+                ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
                         transform=ax.transAxes, fontsize=12,verticalalignment='top', bbox=props)
+                
+            else:
+                ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
+                        transform=ax.transAxes, fontsize=14, fontweight = 'bold', verticalalignment='top')
