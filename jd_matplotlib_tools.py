@@ -29,5 +29,6 @@ def add_double_calendar_axis():
     ax_days.set_xlim(ax_months.get_xlim())
     ax_days.tick_params(axis='x', which='major', pad=0)
     ax_days.set_xticklabels(["",50,100,150,200,250,300,350])
-
-    plt.text(2,21,'Day #')
+    
+    ## annotate day axis with unit
+    ax_ticks.annotate('Day #', (.01, 1.04), textcoords='axes fraction', size=12)
