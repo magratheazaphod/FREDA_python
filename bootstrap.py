@@ -175,14 +175,13 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
     if debug == 'hist':
             
             plt.hist(diffs,20)
-            plt.show()
             ax = plt.axes()
             xmin, xmax = ax.get_xlim()
             ymin, ymax = ax.get_ylim()
             print(ymin)
             print(.75*ymax)
             print(.7*ymax)
-            
+   
             #have to put the arrow in different spot depending on method
             if (method == 'bs_mix') | (method == 'perm'):
                 xar=actualdiff
@@ -191,6 +190,7 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
             
             ax.arrow(xar, .98*ymax, 0, -.05*ymax, head_width=.015*(xmax-xmin), head_length=.03*ymax)
             
+            
             #draw lines to demarcate 95%/99% confidence intervals.
             diff_hist, bin_edges = np.histogram(diffs,500)
             cdf = np.cumsum(diff_hist)/niter
@@ -198,13 +198,16 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
             l_95 = bin_edges[np.where(cdf > .025)[0][0]]
             u_95 = bin_edges[np.where(cdf > .975)[0][0]] 
             u_99 = bin_edges[np.where(cdf > .995)[0][0]] 
-            
+                        
             #draw lines to show confidence intervals on histogram
             plt.plot([l_99,l_99], [ymin,ymax], 'r--', lw=2)
             plt.plot([l_95,l_95], [ymin,ymax], 'k--', lw=2)
             plt.plot([u_95,u_95], [ymin,ymax], 'k--', lw=2)
             plt.plot([u_99,u_99], [ymin,ymax], 'r--', lw=2)
             
+            plt.show()
+     
+    print(pval)
     return actualdiff, pval
 
     
