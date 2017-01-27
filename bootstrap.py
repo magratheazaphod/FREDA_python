@@ -1,6 +1,10 @@
 #basic bootstrap functions for general use with gridded spatio-temporal data. Assumption is that data is in form long-lat-time,
 #with bootstrapping generally performed along time axis.
 
+##Change Log
+##1/27/17 - added the ability to use sample median instead of mean to bs_means_diff. Function call
+##works by adding the option estimator="median".
+
 #elementary bootstrap - given data, returns standard deviation of mean by bootstrapping (as well as mean)
 import matplotlib.pyplot as plt
 import numpy as np
@@ -70,13 +74,18 @@ def bs_stdofmean_block(V, niter, blklen):
 #Keywords: bs_nomix, bs_mix and perm
 #Importantly, all the methods implemented here should lead to equivalent answers
 
-def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
+def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n', estimator = 'mean'):
 
     n1 = len(V1)
     n2 = len(V2)
     V = np.append(V1,V2)
     nn = len(V)
     diffs = np.zeros((niter,))
+    
+    if estimator == 'median':
+        f = np.median
+    else:
+        f = np.mean
     
     #bs_mix - draw samples from joint pool of V1 and V2
     #p-value - percentage of samples whose difference is less than actual diff
@@ -90,18 +99,18 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
                 s1 = bs_resample(V, n1)
                 s2 = bs_resample(V, n2)
                 print(s1)
-                print(np.mean(s1))
+                print(f(s1))
                 print(s2)
-                print(np.mean(s2))
-                diffs[i] = np.mean(s1)-np.mean(s2)
+                print(f(s2))
+                diffs[i] = f(s1)-f(s2)
                 print(diffs[i])
                 time.sleep(3)
             
             else: #actual iteration is a 1-liner
-                diffs[i] = np.mean(bs_resample(V, n1))-np.mean(bs_resample(V, n2))
+                diffs[i] = f(bs_resample(V, n1))-f(bs_resample(V, n2))
                 
         #calculate effective p-value
-        actualdiff = np.mean(V1)-np.mean(V2)
+        actualdiff = f(V1)-f(V2)
         pval = (sum(actualdiff > diffs)+1)/(niter+1) 
         #normalized parameter to account for bias
             
@@ -124,9 +133,9 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
                 s2 = Vnew[n1:nn]
                 print(s1)
                 print(s2)
-                print(np.mean(s1))
-                print(np.mean(s2))
-                print(np.mean(s1)-np.mean(s2))
+                print(f(s1))
+                print(f(s2))
+                print(f(s1)-f(s2))
                 time.sleep(2)
             
             else:
@@ -135,10 +144,10 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
                 s1 = Vnew[0:n1]
                 s2 = Vnew[n1:nn]
                 
-            diffs[i] = np.mean(s1)-np.mean(s2)
+            diffs[i] = f(s1)-f(s2)
     
         #calculate effective p-value
-        actualdiff = np.mean(V1)-np.mean(V2)
+        actualdiff = f(V1)-f(V2)
         pval = (sum(actualdiff > diffs)+1)/(niter+1) 
         #normalized parameter
             
@@ -154,19 +163,19 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
                 s1 = bs_resample(V1, n1)
                 s2 = bs_resample(V2, n2)
                 print(s1)
-                print(np.mean(s1))
+                print(f(s1))
                 print(s2)
-                print(np.mean(s2))
-                diffs[i] = np.mean(s1)-np.mean(s2)
+                print(f(s2))
+                diffs[i] = f(s1)-f(s2)
                 print(diffs[i])
                 time.sleep(3)
             
             else:
                 
-                diffs[i] = np.mean(bs_resample(V1, n1))-np.mean(bs_resample(V2, n2))
+                diffs[i] = f(bs_resample(V1, n1))-f(bs_resample(V2, n2))
     
         #calculate effective p-value
-        actualdiff = np.mean(V1)-np.mean(V2)
+        actualdiff = f(V1)-f(V2)
         pval = (sum(diffs > 0)+1)/(niter+1) 
         #normalized parameter to account for bias
         
@@ -207,7 +216,6 @@ def bs_means_diff(V1, V2, niter, method='bs_nomix', debug='n'):
             
             plt.show()
      
-    print(pval)
     return actualdiff, pval
 
     
