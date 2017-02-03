@@ -52,11 +52,11 @@ def mark_time_periods(periods, numbers = 'no', box = 'yes'):
 
         if numbers == 'yes':
         #if yes, place a text box in upper left in axes coords
-        
+                 
             if box == 'yes':
                 ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
                         transform=ax.transAxes, fontsize=12,verticalalignment='top', bbox=props)
-                
+
             else:
                 ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
                         transform=ax.transAxes, fontsize=14, fontweight = 'bold', verticalalignment='top')
