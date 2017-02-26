@@ -42,10 +42,10 @@ def add_double_calendar_axis():
 def mark_time_periods(periods, numbers = 'no', box = 'yes'):
     
     ax = plt.gca()
+    [ymin, ymax] = ax.get_ylim()
     
     for i, p in enumerate(periods):
             
-        [ymin, ymax] = ax.get_ylim()
         plt.plot([p[0],p[0]], [ymin,ymax],'k--')
         plt.plot([p[1],p[1]], [ymin,ymax],'k--')
         props = dict(boxstyle='square,pad=0.1', facecolor='white')
@@ -60,3 +60,6 @@ def mark_time_periods(periods, numbers = 'no', box = 'yes'):
             else:
                 ax.annotate(i+1, ((p[0]+7)/365, .95), textcoords='axes fraction', \
                         transform=ax.transAxes, fontsize=14, fontweight = 'bold', verticalalignment='top')
+                
+    #in case plot limits get changed, reset them to original.
+    ax.set_ylim([ymin,ymax])
