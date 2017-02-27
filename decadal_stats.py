@@ -64,5 +64,14 @@ def collect_data(years, period):
 
 ## this time, the expected input is a 2-item list of tuples. Each tuple should contain
 ## a beginning and end year.
-def compare_periods(years, periods, tau=1):
+## likewise, period just be a single tuple. an external script runs through all the sets of years.
+def compare_periods(years, period, tau=1):
+    results = {'latitude':{},'intensity':{},'frequency':{}}
+    [lats_p1, ints_p1] = collect_data(years[0], period)
+    [lats_p2, ints_p2] = collect_data(years[1], period)
+    data = {'latitude':(lats_p1,lats_p2),'intensity':(ints_p1,ints_p2)}
+    
+    for var,values in data.items():
+        results[var]['mean_p1']
+    
     return 2
