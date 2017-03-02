@@ -4,6 +4,7 @@
 #This particular code uses the output of the RDA algorithm and finds the mean of 
 #rainband statistics such as frequency, latitude and intensity for time periods of choice.
 
+from bootstrap import bs_means_diff, bs_stdofmean
 import datetime
 from itertools import compress
 import matplotlib.pyplot as plt
@@ -16,8 +17,7 @@ import time
 RDA_path_1 = "/Users/Siwen/Desktop/ferret/bin/meiyu_clean.nc"
 RDA_path_2 = "/Users/Siwen/Desktop/ferret/bin/meiyu_2_clean.nc"
 
-## dives into the netCDF file and spits out all of the data of particular attribu
-## dives into the netCDF file and spits out all of the data of particular attribu
+## dives into the netCDF file and returns all data matching date criteria
 def collect_data(years, period):
     
     RDA_1 = nc.Dataset(RDA_path_1, 'r') #all primary events
@@ -38,10 +38,7 @@ def collect_data(years, period):
     date_list = [datetime.timedelta(days=x) + startday for x in range(0, 20819)]
     
     #the .timetuple().tm_yday command turns a datetime object into a day of the year.
-    filter_days = [(dd.timetuple().tm_yday >= period[0]) & \
-                   (dd.timetuple().tm_yday <= period[1]) & \
-                   (dd.year >= years[0]) & (dd.year <= years[1]) \
-                   for dd in date_list]
+    filter_days = [(dd.timetuple().tm_yday >= period[0]) & (dd.timetuple().tm_yday <= period[1]) & (dd.year >= years[0]) & (dd.year <= years[1]) for dd in date_list]
     days = list(compress(range(20819),filter_days))
     
     #filter full list of latitudes and intensities to only include time period of interest.
@@ -73,5 +70,9 @@ def compare_periods(years, period, tau=1):
     
     for var,values in data.items():
         results[var]['mean_p1']
+        results[var]['mean_p2']
+        results[var]['diff']
+        results[var]['pval']
+
     
     return 2
