@@ -18,17 +18,18 @@ RDA_path_1 = "/Users/Siwen/Desktop/ferret/bin/meiyu_clean.nc"
 RDA_path_2 = "/Users/Siwen/Desktop/ferret/bin/meiyu_2_clean.nc"
 
 ## dives into the netCDF file and returns all data matching date criteria
-def collect_data(years, period, primary_only = False, latrange = [0,99]):
+## note: freq_out returns a tuple [number_of_days, band_pct].
+def collect_data(years, period, primary_only = False, latrange = [20,40]):
     RDA_1 = nc.Dataset(RDA_path_1, 'r') #all primary events
     RDA_2 = nc.Dataset(RDA_path_2, 'r') #all secondary events
 
     #load data from NetCDF files to notebook
     lat_1 = RDA_1.variables['lat_115'][:]
     lat_2 = RDA_2.variables['lat_115'][:]
-
+    
     int_1 = RDA_1.variables['intensity'][:] 
     int_2 = RDA_2.variables['intensity'][:]
-    
+        
     countit_1 = RDA_1.variables['countit_1'][:]
     
     #Assign a calendar date to each time point
@@ -37,24 +38,21 @@ def collect_data(years, period, primary_only = False, latrange = [0,99]):
     
     #the .timetuple().tm_yday command turns a datetime object into a day of the year.
     filter_days = [(dd.timetuple().tm_yday >= period[0]) & (dd.timetuple().tm_yday <= period[1]) & (dd.year >= years[0]) & (dd.year <= years[1]) for dd in date_list]
-    days = list(compress(range(20819),filter_days))
+    days_list = list(compress(range(20819), filter_days))
     
-    #filter full list of latitudes and intensities to only include time period of interest.
-    lat_1_out = lat_1[days]
-    lat_2_out = lat_2[days]
-    int_1_out = int_1[days]
-    int_2_out = int_2[days]
-    front_present = countit_1[days]
-    
-    #optional filter set by latmin and latmax to only consider events within a certain lat range.
-    lat_1_pass = (lat_1_out > latrange[0]) & (lat_1_out < latrange[1])
-    lat_2_pass = (lat_2_out > latrange[0]) & (lat_2_out < latrange[1])
-    lat_1_out = lat_1_out[lat_1_pass]
-    lat_2_out = lat_2_out[lat_2_pass]    
-    int_1_out = int_1_out[lat_1_pass]
-    int_2_out = int_2_out[lat_2_pass]
-    front_present = front_present[lat_1_pass]
-    freq_out = sum(front_present)/len(front_present)
+    #filter by latitude. also effectively filters out NaN
+    lat_1_pass = (lat_1 > latrange[0]) & (lat_1 < latrange[1])
+    lat_1_days = list(compress(range(20819), filter_days&lat_1_pass))
+    lat_2_pass = (lat_2 > latrange[0]) & (lat_2 < latrange[1])
+    lat_2_days = list(compress(range(20819), filter_days&lat_2_pass))
+
+    ##apply filters
+    lat_1_out = lat_1[lat_1_days]
+    lat_2_out = lat_2[lat_2_days]
+    int_1_out = int_1[lat_1_days]
+    int_2_out = int_2[lat_2_days]
+   
+    freq_out = {'n':sum(filter_days),'p':len(lat_1_out)/sum(filter_days)}
     
     #default is primary and secondary
     if primary_only == False:
@@ -63,34 +61,50 @@ def collect_data(years, period, primary_only = False, latrange = [0,99]):
     else:
         lats_out = lat_1_out
         ints_out = int_1_out
-        
-    lats_out = lats_out[~np.isnan(lats_out)]
-    ints_out = ints_out[~np.isnan(ints_out)] 
+    
     RDA_1.close()
     RDA_2.close()
     
-    return [freq,lats_out, ints_out]
+    return [freq_out, lats_out, ints_out]
 
 ## expected input is a 2-item list of tuples. Each tuple should contain
 ## a beginning and end year.
 ## likewise, period just be a single tuple. an external script runs through all the sets of years.
+
+## calculations of standard deviation of mean and p-value are analytic for frequency
+## for intensity and latitude, we use bootstrapping.
 def compare_periods(years, period, primary_only = False, latrange = [0,99], tau=1):
     results = {'latitude':{},'intensity':{},'frequency':{}}
     [freq_p1, lats_p1, ints_p1] = collect_data(years[0], period, latrange = latrange)
     [freq_p2, lats_p2, ints_p2] = collect_data(years[1], period, latrange = latrange)
     data = {'latitude':(lats_p1,lats_p2),'intensity':(ints_p1,ints_p2),
-           'frequency':(freq_p1,freq_p2)s}
+           'frequency':(freq_p1,freq_p2)}
     
     #default number of iterations for bootstrap (min 2000 recommended)
     niter=10000
     
+    ##handles frequency
+    for fq in data['frequency']:
+        n = fq['n']
+        p = fq['p']
+        std_p = p*(1-p)/n**.5
+    
+    results['frequency']['mean_p1'] = p1
+    results['frequency']['mean_p2'] = p2
+    results['frequency']['std_p1'] = 1
+    results['frequency']['std_p2'] = 1
+    results['frequency']['diff_p2p1'] = results['frequency']['mean_p2']\
+                                       -results['frequency']['mean_p1']
+    results['frequency']['pval'] = 1
+    
+    ## handles latitude and intensity
     for var,values in data.items():
 
         results[var]['mean_p1'] = data[var][0].mean()
         results[var]['mean_p2'] = data[var][1].mean()
         results[var]['std_p1'] = bs_stdofmean(data[var][0],niter)[1]
         results[var]['std_p2'] = bs_stdofmean(data[var][1],niter)[1]
-        results[var]['diff_p1p2'] = results[var]['mean_p2']-results[var]['mean_p1']
+        results[var]['diff_p2p1'] = results[var]['mean_p2']-results[var]['mean_p1']
         results[var]['pval'] = bs_means_diff(data[var][1],data[var][0],\
                                              niter, method='perm')[1]
 
