@@ -11,11 +11,17 @@ import matplotlib.pyplot as plt
 import netCDF4 as nc
 import numpy as np
 import os
+import scipy.stats
 import time
 
 #Path to RDA results
 RDA_path_1 = "/Users/Siwen/Desktop/ferret/bin/meiyu_clean.nc"
 RDA_path_2 = "/Users/Siwen/Desktop/ferret/bin/meiyu_2_clean.nc"
+
+
+#1-liner for calculating standard deviation of Bernoulli process
+def std_bernoulli(n,p):
+    return (p*(1-p)/n)**.5
 
 ## dives into the netCDF file and returns all data matching date criteria
 ## note: freq_out returns a tuple [number_of_days, band_pct].
@@ -65,7 +71,7 @@ def collect_data(years, period, primary_only = False, latrange = [20,40]):
     RDA_1.close()
     RDA_2.close()
     
-    return [freq_out, lats_out, ints_out]
+    return [freq_out, lats_out, ints_out, ]
 
 ## expected input is a 2-item list of tuples. Each tuple should contain
 ## a beginning and end year.
@@ -75,27 +81,26 @@ def collect_data(years, period, primary_only = False, latrange = [20,40]):
 ## for intensity and latitude, we use bootstrapping.
 def compare_periods(years, period, primary_only = False, latrange = [0,99], tau=1):
     results = {'latitude':{},'intensity':{},'frequency':{}}
-    [freq_p1, lats_p1, ints_p1] = collect_data(years[0], period, latrange = latrange)
-    [freq_p2, lats_p2, ints_p2] = collect_data(years[1], period, latrange = latrange)
-    data = {'latitude':(lats_p1,lats_p2),'intensity':(ints_p1,ints_p2),
-           'frequency':(freq_p1,freq_p2)}
+    [freq_p1, lats_p1, ints_p1] = collect_data(years[0], period,\
+                                               primary_only=primary_only, latrange = latrange)
+    [freq_p2, lats_p2, ints_p2] = collect_data(years[1], period,\
+                                               primary_only=primary_only, latrange = latrange)
+    data = {'latitude':(lats_p1,lats_p2),'intensity':(ints_p1,ints_p2)}
     
     #default number of iterations for bootstrap (min 2000 recommended)
     niter=10000
     
-    ##handles frequency
-    for fq in data['frequency']:
-        n = fq['n']
-        p = fq['p']
-        std_p = p*(1-p)/n**.5
-    
-    results['frequency']['mean_p1'] = p1
-    results['frequency']['mean_p2'] = p2
-    results['frequency']['std_p1'] = 1
-    results['frequency']['std_p2'] = 1
-    results['frequency']['diff_p2p1'] = results['frequency']['mean_p2']\
-                                       -results['frequency']['mean_p1']
-    results['frequency']['pval'] = 1
+    #note that the autocorrelation time scale Tau reduces the number of observations
+    #to N=n/Tau
+    results['frequency']['mean_p1'] = freq_p1['p']
+    results['frequency']['mean_p2'] = freq_p2['p']
+    results['frequency']['std_p1'] = std_bernoulli(freq_p1['n']/tau,freq_p1['p'])
+    results['frequency']['std_p2'] = std_bernoulli(freq_p2['n']/tau,freq_p2['p'])
+    results['frequency']['diff_p2p1'] = freq_p2['p']-freq_p1['p']
+    Z = results['frequency']['diff_p2p1']/\
+    (results['frequency']['std_p1']**2+results['frequency']['std_p2']**2)**.5
+    results['frequency']['pval'] = scipy.special.ndtr(Z)
+
     
     ## handles latitude and intensity
     for var,values in data.items():
@@ -107,5 +112,6 @@ def compare_periods(years, period, primary_only = False, latrange = [0,99], tau=
         results[var]['diff_p2p1'] = results[var]['mean_p2']-results[var]['mean_p1']
         results[var]['pval'] = bs_means_diff(data[var][1],data[var][0],\
                                              niter, method='perm')[1]
-
+        
+    data['frequency']=(freq_p1,freq_p2)
     return results
