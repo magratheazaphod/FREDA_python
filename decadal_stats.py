@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import netCDF4 as nc
 import numpy as np
 import os
+import pandas as pd
 import scipy.stats
 import time
 
@@ -80,7 +81,10 @@ def collect_data(years, period, primary_only = False, latrange = [20,40]):
 ## calculations of standard deviation of mean and p-value are analytic for frequency
 ## for intensity and latitude, we use bootstrapping.
 def compare_periods(years, period, primary_only = False, latrange = [0,99], tau=1):
-    results = {'latitude':{},'intensity':{},'frequency':{}}
+    metrics = ['frequency','latitude','intensity']
+    stats = ['mean_p1','mean_p2','std_p1','std_p2','diff_p2p1','pval']
+    results = pd.DataFrame(columns=metrics,index=stats)
+    
     [freq_p1, lats_p1, ints_p1] = collect_data(years[0], period,\
                                                primary_only=primary_only, latrange = latrange)
     [freq_p2, lats_p2, ints_p2] = collect_data(years[1], period,\
@@ -114,4 +118,5 @@ def compare_periods(years, period, primary_only = False, latrange = [0,99], tau=
                                              niter, method='perm')[1]
         
     data['frequency']=(freq_p1,freq_p2)
+    
     return results
